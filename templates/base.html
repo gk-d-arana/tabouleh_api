@@ -1,0 +1,121 @@
+{% load static %}
+<html>
+<head>
+    {% block style %}
+      
+    {% endblock style %}
+<!--     <script  src="{% static 'js/boxicons.js' %}"></script>
+ -->    <link rel="stylesheet" href="{% static 'css/styles.css'  %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+ <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+
+
+
+
+</head>
+ 
+ <body>
+         
+    <body id="body-pd">
+        <header class="header" id="header">
+            <div class="header_toggle"> <img src="{% static 'images/logo.png' %}" id="header-toggle"> </div>
+            <div class="d-flex align-items-center">
+                <div><span>{{request.user.username}}</span></div>
+                <div class="ms-5 header_img"> <img class="adm-img" src="" alt=""> </div>
+            </div>
+        </header>
+        <div class="l-navbar" id="nav-bar">
+            <nav class="nav">
+                <div> 
+                    <div class="nav_list"> 
+                        <a href="{% url 'home_view' %}" class="link-to-dashboard nav_link"> <i class='bx bx-grid-alt nav_icon'></i> <span class="nav_name">Dashboard</span> </a> 
+                        <a href="{% url 'product_view' %}" class="link-to-products nav_link"> <i class='bx bx-folder nav_icon'></i> <span class="nav_name">Products</span> </a> 
+                        <a href="{% url 'tables_view' %}" class="link-to-tables nav_link"> <i class='bx bx-table nav_icon' ></i> <span class="nav_name">Tables</span> </a> 
+                        <a href="{% url 'users_view' %}" class="link-to-users nav_link"> <i class='bx bxs-group nav_icon'></i> <span class="nav_name">Users</span> </a> 
+                        <a href="{% url 'employees_view' %}" class="link-to-employees nav_link"> <i class='bx bxs-truck nav_icon'></i> <span class="nav_name">Employees</span> </a> 
+                        <a href="{% url 'chat_view' %}" class="link-to-chat nav_link"> <i class='bx bxs-chat nav_icon'></i> <span class="nav_name">Chat</span> </a> 
+                        <a href="{% url 'accounts_view' %}" class="link-to-accounts nav_link"> <i class='bx bxs-user-circle nav_icon'></i> <span class="nav_name">Accounts</span> </a> 
+                        <a href="{% url 'notifications_view' %}" class="link-to-notifications nav_link"> <i class='bx bxs-bell-ring nav_icon'></i> <span class="nav_name">Notifications</span> </a> 
+                    </div>
+                </div> 
+                <a href="{% url 'logout_view' %}" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">SignOut</span> </a>
+            </nav>
+        </div>
+        <!--Container Main start-->
+        <div class="height-100">
+            <div class="container">
+
+                {% block content %}
+                    
+                {% endblock content %}
+                    
+            </div>
+        </div>
+        <!--Container Main end-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js" integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            $(document).ready(()=>{
+                
+    const showNavbar = (toggleId, navId, bodyId, headerId) =>{
+        const toggle = document.getElementById(toggleId),
+        nav = document.getElementById(navId),
+        bodypd = document.getElementById(bodyId),
+        headerpd = document.getElementById(headerId)
+        
+        
+        // change the active li in the sidebar
+        let page = location.pathname.slice(15).replace("/", "")
+        $(`.link-to-${page}`).addClass('active').css('color', '#01CB63')
+       
+            
+    
+        axios({
+            url: `${location.host}/get_profile_image/`,
+            method: 'GET', 
+            headers: {
+                Authorization :  `${localStorage.getItem('token')}`
+            }
+        }).then(res=>{
+            console.log(res)
+            document.querySelector('.adm-img').setAttribute('src', `${res.profile_image}`)
+        }).catch(err => console.log(err))
+    
+    
+        // Validate that all variables exist
+        if(toggle && nav && bodypd && headerpd){
+        toggle.addEventListener('click', ()=>{
+        // show navbar
+        nav.classList.toggle('show')
+        // change icon
+        toggle.classList.toggle('bx-x')
+        // add padding to body
+        bodypd.classList.toggle('body-pd')
+        // add padding to header
+        headerpd.classList.toggle('body-pd')
+        })
+        }
+        }
+        
+        showNavbar('header-toggle','nav-bar','body-pd','header')
+        
+            })
+        </script>
+
+
+
+    {% block scripts %}
+        
+    {% endblock scripts %}
+        
+ </body>
+ 
+ </html>

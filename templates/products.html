@@ -1,0 +1,625 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Products</h1>
+
+    
+
+{% block style %}
+  
+  <style>
+    @media (max-width:1000px) {
+      .cat-div .card-header{
+        display: none;
+      }
+      .meal_table{
+
+        width: 700px;
+      }
+    }
+  </style>
+
+{% endblock style %}
+  
+
+<div class="categories-wrapper">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb naviation-breadcrumb-ol">
+      <li class="breadcrumb-item">Categories</li>  
+    </ol>
+  </nav>
+  <div class="search-wrapper hidden ">
+
+    <div class="d-flex search-div hidden">
+      <div class="mb-3 col-2">
+        <select class="form-select" aria-label="Default select example">
+          <option selected hidden>Filter</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+      </div>
+      <div class="mb-3 col-10">
+        <input type="text" class="form-control" placeholder="Search Category" id="search" aria-describedby="emailHelp">
+      </div>
+    </div>
+  </div>
+  
+<div class="categories-main-div">
+  
+  
+  {% for obj in data %}
+      <div class="card category-{{obj.category.category_id}}-card mx-1 border-primary mb-3">
+      
+      
+        <div class="card-header d-flex justify-content-between">
+          <b>{{obj.category.category_name}}</b>
+          <div>
+            <a class="show-category-products" id="{{obj.category.category_id}}" href="#">Show All</a>
+            <span style="cursor:pointer;color:red;" class="delete-category ms-4" id="{{obj.category.category_id}}"><i id="{{obj.category.category_id}}" class='delete-category bx bxs-trash-alt'></i></span>
+          </div>
+        </div>
+       
+       
+        <div class="card-body card-scroll">
+    
+          {% for meal in obj.meals %}            
+          <div class="m-{{meal.meal_id}} d-flex">
+            <div class="col-3 h-100"><img class="w-100" src="/{{meal.meal_main_image}}"></div>
+            <div class="col-8 h-100 mx-3 d-flex align-items-center">
+              <div class="col-8">
+                <h4>{{meal.meal_name}}</h4>
+                <p>{{meal.meal_order_times}}</p>
+              </div>
+              <div class="col-4">
+                <p style="color: #01CB63;">{{meal.customer_meal_price}}$</p>
+              </div>
+            </div>
+          </div>
+           <hr>
+          {% endfor %}
+
+    
+        </div>
+
+
+      </div>
+  {% endfor %}
+
+
+
+</div>
+
+
+
+
+<!-- Add Category -->
+<div class="add-category-modal">
+  <div class="d-flex justify-content-center add-category-modal w-100">
+    <!-- Modal -->
+    <a class="btn btn-primary px-5 mb-3" data-bs-toggle="modal" data-bs-target="#addCategory" href="#" style="background-color: #F86161;color:#fff;border:none;border-radius:20px">Add Category</a>
+    <div class="modal fade" id="addCategory" tabindex="-1" aria-labelledby="addCategoryLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addCategoryLabel">Add Category</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form class="addCategory">
+               {% csrf_token %} 
+            </form>
+            <div class="mb-3">
+              <label for="category_name">Category Name</label>
+              <input type="text" class="form-control category_name">
+            </div>
+            <div class="mb-3">
+              <label for="category_name_ar">Category Arabic Name</label>
+              <input type="text" class="form-control category_name_ar">
+            </div>
+            <div class="mb-3">
+              <label for="category_image_inpcategory_imageut">Category Image</label>
+              <input type="file" class="form-control category_image">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-primary create-category px-5 mb-3" href="#" data-bs-dismiss="modal" style="background-color: #F86161;color:#fff;border:none;border-radius:20px"> Done</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  
+  </div>
+</div>
+
+
+</div>
+{% for obj in data %}
+  
+<div class="category-{{obj.category.category_id}}-products cat-div hidden">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb naviation-breadcrumb-ol">
+      <li class="breadcrumb-item go-to-main-category-div" style="cursor: pointer;" id="{{obj.category.category_id}}">Categories</li>  
+      <li class="breadcrumb-item"> {{obj.category.category_name}} </li>
+    </ol>
+  </nav>
+  <div class="card w-100 mb-3 card-scroll">
+    <div class="card-header"></div>
+    <div class="card-body products-table-card">
+      <table class="table text-center">
+
+    <thead>
+      <tr>
+        <th></th>
+        <th>Meal Name</th>
+        <th>Meal Customer Price</th>
+        <th>Meal Description</th>
+        <th>Ingredients</th>
+        <th>Action</th>        
+      </tr>
+    </thead>        
+        <tbody>
+          
+                  {% for meal in obj.meals %}                  
+                  <tr class="meal-{{meal.meal_id}}">
+                    <th style="width: 30px;"><img width="80" src="/{{meal.meal_main_image}}"></th>
+                    <td>{{meal.meal_name}}</td>
+                    <td>{{meal.customer_meal_price}}</td>
+                    <td>{{meal.meal_description}}</td>
+                    <td>
+                      {% for ingre in meal.meal_ingredients.all %}
+                        {{ingre.ingredient_name}},
+                      {% endfor %}
+                    </td>
+                    <td>
+                      <a style="margin: 0 auto;color:#01CB63" class="btn show-product-details" data-categoryid="{{meal.meal_category.category_id}}" id="{{meal.meal_id}}" >View Item</a>
+                      <a style="margin: 0 auto; color:#F86161; " class="btn delete-product" id="{{meal.meal_id}}" >Delete Item</a>
+                    
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+        </tbody>
+   
+   
+   
+      </table>
+    
+    </div>
+  </div>
+</div>
+
+
+{% for meal in obj.meals %}                  
+
+
+
+
+
+
+<div class="product-{{meal.meal_id}}-details p-details hidden">
+
+
+  
+  <div class="modal fade" id="edit-meal-{{meal.meal_id}}" tabindex="-1" aria-labelledby="edit-meal-{{meal.meal_id}}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-top-full modal-fullscreen modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit {{meal.meal_name}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="background-image: url('http://localhost:8000/static/images/Mask%20Group%2086@2x.png');">
+          <div class="add-product-div">
+            <form class="addMeal">{% csrf_token %}</form>
+              <table class="table table-striped">
+                  <tbody>
+                    <tr class="w-100">
+                      <th width="100%" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Meal Name</div>
+                        <div class="col-8">
+                            <input type="text" class="form-control meal_name" value="{{meal.meal_name}}">
+                      </div>  
+                      </th>
+                    </tr>
+                    <tr class="w-100">
+                      <th width="100%" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Arabic Meal Name</div>
+                        <div class="col-8">
+                            <input type="text" class="form-control meal_name_ar" value="{{meal.meal_name_ar}}">
+                      </div>  
+                      </th>
+                    </tr>
+                    <tr class="w-100">
+                      <th scope="row" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Meal Description</div>
+                        <div class="col-8">
+                          <textarea class="w-100 meal_description" rows="10">{{meal.meal_description}}</textarea>
+                      </div>  
+                      </th>
+                    </tr>
+                    <tr class="w-100">
+                      <th scope="row" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Arabic Meal Description</div>
+                        <div class="col-8">
+                          <textarea class="w-100 meal_description_ar" rows="10">{{meal.meal_description_ar}}</textarea>
+                      </div>  
+                      </th>
+                    </tr>
+                    <tr class="w-100">
+                      <th width="100%" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Category</div>
+                        <div class="col-8">
+                          <select class="form-select meal_category" aria-label="Offer Meal select">
+                            <option value="{{meal.meal_category.category_id}}" hidden selected>{{meal.meal_category.category_name}}</option>
+                            
+                            {% for obj in data %}                        
+                            <option value="{{obj.category.category_id}}">{{obj.category.category_name}}</option>
+                            {% endfor %}
+                              
+      
+                          </select>                
+                        </div>  
+                      </th>
+                    </tr>
+                    <tr class="w-100">
+                      <th scope="row" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Price</div>
+                        <div class="col-8 d-flex">
+                          <div class="col-2 mx-2 text-center">
+                            <h6>Normal Customer</h6>
+                          <input type="text" class="form-control customer_meal_price" value="{{meal.customer_meal_price}}">
+      
+                          </div>
+                          <div class="col-3 mx-2 text-center">
+                            <h6>Super Market Customer</h6>
+                          <input type="text" class="form-control supermarket_meal_price" value="{{meal.supermarket_meal_price}}">
+      
+                          </div>
+                          <div class="col-2 mx-2 text-center">
+                            <h6>Company Customer</h6>
+                          <input type="text" class="form-control company_meal_price" value="{{meal.company_meal_price}}">
+      
+                          </div>
+                          <div class="col-2 mx-2 text-center">
+                            <h6>Agent Customer</h6>
+                          <input type="text" class="form-control agent_meal_price" value="{{meal.agent_meal_price}}">
+      
+                          </div>
+                          <div class="col-3 mx-2 text-center">
+                            <h6>Restuarant Customer</h6>
+                          <input type="text" class="form-control restuarant_meal_price" value="{{meal.restaurant_meal_price}}">
+      
+                          </div>
+                      </div>  
+                      </th>
+                    </tr>
+                    <tr class="w-100">
+                      <th width="100%" class="d-flex align-items-center">
+                        <div class="col-3 th-product">Points</div>
+                        <div class="col-8">
+                            <input type="number" class="form-control meal_points" value="{{meal.meal_points}}">
+                      </div>  
+                      </th>
+                    </tr>
+
+                  </tbody>
+              </table>
+              <div class="w-100 d-flex justify-content-center">
+                <button id="{{meal.meal_id}}"  
+                class="btn btn-primary submit-edit-meal px-5 mb-3" 
+                style="background-color: #F86161;color:#fff;border:none;border-radius:20px">
+                      Done
+              </button>
+          </div>
+      
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>  
+
+
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb naviation-breadcrumb-ol">
+      <li class="breadcrumb-item go-to-main-category-div-from-product" id="{{meal.meal_id}}" style="cursor: pointer;">Categories</li>  
+      <li class="breadcrumb-item go-to-product-category" style="cursor: pointer;" id="{{meal.meal_id}}" data-categoryid="{{meal.meal_category.category_id}}">{{meal.meal_category.category_name}}</li>  
+
+      <li class="breadcrumb-item ">{{meal.meal_name}}</li>
+    </ol>
+  </nav>
+    <table class="table meal_table table-striped">
+
+      <tbody>
+        <tr class="w-100">
+          <th width="100%" class="d-flex align-items-center">
+            <div class="col-3 th-product">Meal Name</div>
+            <div class="col-8">
+              
+              {{meal.meal_name}}
+          </div>  
+          </th>
+        </tr>
+        <tr class="w-100">
+          <th width="100%" class="d-flex align-items-center">
+            <div class="col-3 th-product">Meal Arabic Name</div>
+            <div class="col-8">
+              {{meal.meal_name_ar}}
+          </div>  
+          </th>
+        </tr>
+        <tr class="w-100">
+          <th scope="row" class="d-flex align-items-center">
+            <div class="col-3 th-product">Meal Description</div>
+            <div class="col-8">
+              {{meal.meal_description}}
+            </div>  
+          </th>
+        </tr>
+        <tr class="w-100">
+          <th scope="row" class="d-flex align-items-center">
+            <div class="col-3 th-product">Meal Arabic Description</div>
+            <div class="col-8">
+              {{meal.meal_description_ar}}
+            </div>  
+          </th>
+        </tr>
+
+
+          <tr class="w-100">
+            <th scope="row" class="d-flex align-items-center">
+              <div class="col-3 th-product">Ingredients</div>
+              <div class="col-8">
+                <ul>
+                  {% for ingredient in meal.meal_ingredients.all %}
+                  <li class="ingredient-item">{{ingredient.ingredient_name}}</li>
+                  {% endfor %}
+
+                </ul>
+
+              </div>  
+            </th>
+        </tr>
+        <tr class="w-100">
+          <th scope="row" class="d-flex align-items-center">
+            <div class="col-3 th-product">Price</div>
+            <div class="col-8 d-flex">
+              <div class="col-2 text-center">
+                <h6>Normal Customer</h6>
+                <p>{{meal.customer_meal_price}}$</p>
+              </div>
+              <div class="col-3 text-center">
+                <h6>Super Market Customer</h6>
+                <p>{{meal.supermarket_meal_price}}$</p>
+              </div>
+              <div class="col-2 text-center">
+                <h6>Agent Customer</h6>
+                <p>{{meal.agent_meal_price}}$</p>
+              </div>
+              <div class="col-2 text-center">
+                <h6>Company Customer</h6>
+                <p>{{meal.company_meal_price}}$</p>
+              </div>
+              <div class="col-3 text-center">
+                <h6>Restaurant Customer</h6>
+                <p>{{meal.restaurant_meal_price}}$</p>
+
+              </div>
+          </div>  
+          </th>
+        </tr>
+
+        <tr class="w-100">
+          <th scope="row" class="d-flex align-items-center">
+            <div class="col-3 th-product">Points</div>
+            <div class="col-8">
+              {{meal.meal_points}}
+          </div>  
+          </th>
+        </tr>
+
+        <tr class="w-100">
+          <th scope="row" class="d-flex align-items-center">
+            <div class="col-3 th-product">Photos</div>
+            <div class="col-8 d-flex">
+              <div class="col-xl-2 col-sm-4 col-md-4 col-lg-3 text-center">
+                  <img width="70px"  src="/{{meal.meal_main_image}}">
+              </div>
+              {% for meal_image in meal_images %}
+                   {% if meal_image.meal.meal_id ==  meal.meal_id %}
+                  <div class="col-xl-2 col-sm-4 col-md-4 col-lg-3 text-center">
+                    <img width="70px" src="/{{meal_image.image}}">
+                </div>
+                  {% endif %} 
+              {% endfor %}
+            
+          </div>   
+          </th>
+        </tr>
+
+        <tr style="background-color: #fff;" class="w-100">
+          <th scope="row" class="d-flex align-items-center">
+            <div class="col-3 th-product">Offers</div>
+            <div class="col-8">
+              {% for offer in meal.offers.all %}
+                {{offer.offer_name}} <br>
+              {% endfor %}
+            </div>  
+          </th>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <div class="reviews mt-5">
+      <div class="card w-100 mb-3">
+        <div class="card-header">Users Reviews</div>
+        <div class="card-body products-table-card">
+          <table class="table">
+    
+            <tbody>
+              {% for rating in ratings %}
+                
+              <tr>
+                <th style="width: 30px;"><img width="80" src="/{{rating.customer.profile_image}}"></th>
+                <td>{{rating.customer.user.username}}</td>
+                <td>
+
+                               
+                  {% if rating.rating_value == 0  %}                          
+                  <span class="w-100">
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+                    
+                  {% if rating.rating_value > 0 and rating.rating_value <= 0.5  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star-half' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+
+
+                  {% if rating.rating_value > 0.5 and rating.rating_value < 1  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+                    
+                  {% if rating.rating_value > 1 and rating.rating_value <= 1.5  %}                          
+                  <span class="w-100">
+                    <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                    <i class='bx bxs-star-half' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+
+                  {% if rating.rating_value > 1.5 and rating.rating_value <= 2  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+                    
+                  {% if rating.rating_value > 2 and rating.rating_value <= 2.5  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star-half' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+
+
+                  {% if rating.rating_value > 2.5 and rating.rating_value <= 3  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+                    
+                  {% if rating.rating_value > 3 and rating.rating_value <= 3.5  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star-half' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+
+                  {% if rating.rating_value > 3.5 and rating.rating_value <= 4  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bx-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+
+                  {% if rating.rating_value > 4 and rating.rating_value <= 4.85  %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star-half' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}     
+
+                  {% if rating.rating_value > 4.85 %}                          
+                  <span class="w-100">
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                      <i class='bx bxs-star' style="color: #F86161;font-size:1.4rem"></i>
+                  </span>
+                  {% endif %}
+
+
+
+                </td>
+                <td>
+                  {{rating.rating_content}}
+                </td>
+
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        
+        </div>
+      </div>
+      <div class="d-flex justify-content-center w-100">
+        <a class="btn btn-primary px-5 mb-3" data-bs-toggle="modal" data-bs-target="#edit-meal-{{meal.meal_id}}" href="#" style="background-color: #F86161;color:#fff;border:none;border-radius:20px">Edit Item</a>
+      </div>
+    </div>
+</div>
+
+{% endfor %}
+
+
+
+
+{% endfor %}
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+{% block scripts %}
+        <script src="{% static 'js/category_page.js' %}"></script>
+{% endblock scripts %}

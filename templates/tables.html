@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+
+{% block style %}
+  
+  <style>
+    @media (max-width:1000px) {
+      .line-middle{
+        display: none;
+      }
+    }
+  </style>
+
+{% endblock style %}
+  
+
+{% block content %}
+  <h1 class="w-100 d-flex justify-content-between align-items-center">Tables 
+    <i style="cursor: pointer;font-size:2rem;color:gray;" onclick="ExportToExcel('xlsx')" class='bx bx-download'></i>
+  </h1>
+  <div class="d-flex justify-content-center align-items-center">
+    <h3 class="me-4 ">Products Table &nbsp; <span class="line-middle">|</span> </h3>
+    <h3>Orders Table</h3>
+  </div>
+
+  <div class="latest-products-card">
+    <div class="card w-100 mb-3">
+        <div class="card-body products-table-card card-scroll">
+          <table class="table latest_products_table">
+            <thead>
+                <th>                  
+                  <input type="checkbox" name="" class="all">
+                  All Columns
+                  
+                </th>
+                <th>
+                  <input type="checkbox" name="" class="check_all meal_name">
+                  Product Name
+                </th>
+                <th>
+                  <input type="checkbox" name="" class="check_all meal_category">
+                  Category
+                </th>
+                <th>
+                  <input type="checkbox" name="" class="check_all meal_price">
+                  Price
+                </th>
+                <th>
+                  <input type="checkbox" name="" class="check_all meal_order_times">
+                  Times Ordered
+                </th>
+                <th>
+                  <input type="checkbox" name="" class="check_all meal_offers">
+                  Offers
+                </th>
+
+            </thead>
+            <tbody>
+              {% for meal in meals %} 
+
+              <tr>
+                <th style="width: 30px;"><img width="80" src="/{{meal.meal_main_image}}"></th>
+                <td>{{meal.meal_name}}</td>
+                <td>{{meal.meal_category.category_name}}</td>
+                <td>
+                    {{meal.customer_meal_price}}
+                </td>
+                <td>
+                    {{meal.meal_order_times}}
+                </td>
+                <td>
+                    {% for offer in meal.meal_offers.all %}
+                        {{offer.offer_name}},
+                    {% endfor %}
+                </td>
+              </tr>
+
+              {% endfor %}
+
+            </tbody>
+          </table>
+        
+        </div>
+      </div>
+
+    </div>
+
+
+
+
+    <div class="recent-orders-card hidden">
+      <div class="card w-100 mb-3">
+          <div class="card-body products-table-card card-scroll">
+            <table class="table">
+              <thead>
+                  <th></th>
+                  <th>Order Items</th>
+                  <th>Date</th>
+                  <th>Price</th>
+                  <th>User Name</th>
+                  <th>Location</th>
+                  <th>Employee Name</th>
+                  <th>Status</th>
+    
+              </thead>
+              <tbody>
+                <tr>
+                  <th style="width: 30px;"><img width="50" style="border-radius: 50%;" src="https://i.imgur.com/hczKIze.jpg"></th>
+                  <td>Item Name</td>
+                  <td>Offer Description</td>
+                  <td>
+                      Appetizers
+                  </td>
+                  <td>
+                      2000
+                  </td>
+                  <td>
+                      Offer And Offer 2
+                  </td>
+                  <td>
+                    Offer And Offer 2
+                </td>
+                <td>
+                  <div class="btn btn-primary" style="background-color: #01CB63;">Delivered</div>
+              </td>
+                </tr>
+              </tbody>
+            </table>
+          
+          </div>
+        </div>
+    
+      </div>
+
+
+      
+{% endblock content %}
+
+
+
+{% block scripts %}
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script>
+
+
+    const ExportToExcel = (type, fn, dl)  => {      
+      /*let name = prompt('Enter A Name For Your File')
+      if(name == null){
+        return
+      }*/
+      let dataToPrint = {}
+      let checkAll = document.querySelector('.all')
+      if(checkAll.checked){    
+      var elt = document.querySelector('.latest_products_table');
+      var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+      return dl ?
+        XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+        XLSX.writeFile(wb, fn || (`${name}.` + (type || 'xlsx')));
+   }
+ 
+   else{
+     let thr_name = ""
+      tb = document.querySelector('.latest_products_table')
+      for(let j = 0;j<tb.rows[0].children.length;j++){
+        if(tb.rows[0].children[j].children[0].checked){
+          thr_name = tb.rows[0].children[j].childNodes[2].nodeValue
+          thr_name.replace('\n', '')
+          console.log(thr_name)
+        }
+      }
+     return
+     var elt = document.querySelector('.latest_products_table');
+     var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+     return dl ?
+       XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+       XLSX.writeFile(wb, fn || (`${name}.` + (type || 'xlsx')));
+   }
+ 
+ 
+  }
+
+
+
+
+    document.querySelector('.all').addEventListener('change', (e)=>{
+     if(e.target.checked){
+      document.querySelectorAll('.check_all').forEach(checkBox=>{
+        checkBox.checked = true
+      })
+     }
+     else{
+      document.querySelectorAll('.check_all').forEach(checkBox=>{
+         checkBox.checked = false
+      })
+    }
+    })
+
+
+
+</script>
+{% endblock scripts %}

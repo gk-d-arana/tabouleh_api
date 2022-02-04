@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<form class="deleteUser">{% csrf_token %}</form>
+  <div class="user-wrapper">
+    <div class="card h-100" style="overflow-y:scroll;">
+      <div class="card-body">
+        <h4>Recent Users</h4>
+          <table class="table" style="overflow-y: scroll;">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">User Name</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Location</th>
+                <th scope="col">Email</th>
+                <th scope="col">Date</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody class="customers-table">
+              {% for customer in customers %}   
+              <tr class="customer-{{customer.user.id}}">
+                <th style="width: 30px;"><img width="80" src="/{{customer.profile_image}}"></th>
+                <td>{{customer.user.username}}</td>
+                <td>{{customer.phone_number}}</td>
+                <td>{{customer.addresses.first.area_name}}</td>
+                <td>{{customer.user.email}}</td>
+                <td>{{customer.user.date_joined}}</td>
+                <td class="user-actions">
+                  <a href="#" class="mx-2"><i class='bx bxs-message-detail'></i></a>
+                <a href="#" style="cursor:pointer;" class="delete-user" id="{{customer.user.id}}"><i class='bx bxs-trash-alt'></i></a>
+              </td>
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        
+      </div>
+</div>
+  </div>
+{% endblock content %}
+
+
+
+{% block scripts %}
+  <script>
+    $(document).ready(()=>{
+      document.querySelectorAll('.delete-user').forEach(du => {
+        du.addEventListener('click', (e)=>{
+          let csrf_token_form = $('.deleteUser')
+          let csrf_token_input = $(csrf_token_form).children()[0]
+          let csrf_token = $(csrf_token_input).val()
+          fetch(`/delete_user/${du.id}/`, {
+            method : "DELETE", 
+            headers : {
+              "Authorization" : `${localStorage.getItem('adminToken')}`,
+              "X-CSRFToken" : `${csrf_token}`
+          }
+          }).then(res=>res.json()).then(res => {
+            alert('Customer Deleted Successfully')
+            $(`.customer-${du.id}`).remove()
+          })
+        })
+      })
+    })
+  </script>
+{% endblock scripts %}
