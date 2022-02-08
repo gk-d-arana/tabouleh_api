@@ -44,8 +44,8 @@ class MainMealSerializer(serializers.ModelSerializer):
         model = Meal
         fields = [
             'meal_name', 'meal_name_ar', 'meal_id', 'meal_description', 'meal_description_ar', 'meal_rating',
-            'customer_meal_price', 'supermarket_meal_price', 'agent_meal_price',
-            'restaurant_meal_price', 'company_meal_price', "meal_main_image"
+            'customer_meal_price', 'supermarket_meal_price', 'agent_meal_price','meal_points',
+            'restaurant_meal_price', 'company_meal_price', "meal_main_image", 'meal_delivery_time'
         ]
 
 

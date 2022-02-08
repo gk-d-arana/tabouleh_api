@@ -71,6 +71,7 @@ $(document).ready(()=>{
         let restaurant_meal_price = parseInt( $('.restuarant_meal_price').val())
         let category_id = $('.meal_category option:selected').val()
         let meal_points = parseFloat($('.meal_points').val()) 
+        let meal_delivery_time = $('.meal_delivery_time').val()
 /*         let meal_main_image = document.querySelector('.meal_main_image').files[0]
         let meal_images = document.querySelector('.meal_images').files
          */
@@ -83,27 +84,30 @@ $(document).ready(()=>{
           console.log(`${$(ingre).val()}`)
           meal_form.append('ingredients', `${$(ingre).val()}`)
       }) */
-    
-        meal_form.append('meal_id', `${e.target.id}`)
-        meal_form.append('meal_name', `${meal_name}`)
-        meal_form.append('meal_name_ar', `${meal_name_ar}`)
-        meal_form.append('meal_description', `${meal_description}`)
-        meal_form.append('meal_description_ar', `${meal_description_ar}`)
-        meal_form.append('customer_meal_price', customer_meal_price)
-        meal_form.append('supermarket_meal_price', supermarket_meal_price)
-        meal_form.append('company_meal_price', company_meal_price)
-        meal_form.append('agent_meal_price', agent_meal_price)
-        meal_form.append('restaurant_meal_price', restaurant_meal_price)
-        meal_form.append('category_id', category_id)
-        meal_form.append('meal_points', meal_points)
-       // meal_form.append('meal_main_image', meal_main_image)
-        fetch('/meal_managment/', {
+      JSON.stringify({
+        'meal_id': `${e.target.id}`,
+        'meal_name': `${meal_name}`,
+        'meal_name_ar': `${meal_name_ar}`,
+        'meal_description': `${meal_description}`,
+        'meal_description_ar': `${meal_description_ar}`,
+        'customer_meal_price': customer_meal_price,
+        'supermarket_meal_price': supermarket_meal_price,
+        'company_meal_price': company_meal_price,
+        'agent_meal_price': agent_meal_price,
+        'meal_delivery_time': meal_delivery_time,
+        'restaurant_meal_price': restaurant_meal_price,
+        'category_id': category_id,
+        'meal_points': meal_points,
+        'meal_delivery_time': meal_delivery_time,
+       // meal_form.append('meal_main_image': meal_main_image)
+      })
+        fetch('/meal_management/', {
             method: "PUT",
             headers : {
                 "Authorization" : `${localStorage.getItem('adminToken')}`,
                 "X-CSRFToken" : `${csrf_token}`
             },
-            body: meal_form
+            body: `meal_form`
         }).then(res=>res.json()).then(res=>{
                 alert("Meal Updated Successfully")
                 location.reload()
@@ -147,7 +151,7 @@ $(document).ready(()=>{
             let csrf_token_form = $('.addCategory')
             let csrf_token_input = $(csrf_token_form).children()[0]
             let csrf_token = $(csrf_token_input).val()
-            fetch(`/meal_managment/`, {
+            fetch(`/meal_management/`, {
                 method : "DELETE", 
                 headers : {
                     "Authorization" : `${localStorage.getItem('adminToken')}`,

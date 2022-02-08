@@ -92,6 +92,7 @@ class RatingView(CreateAPIView, UpdateAPIView, DestroyAPIView, ListAPIView):
             token = request.headers['Authorization']
             customer = Customer.objects.get(user=Token.objects.get(key=token).user) 
         except Exception as e:
+            print(e)
             raise PermissionDenied
         try: 
             data = json.loads(request.body)
@@ -106,7 +107,8 @@ class RatingView(CreateAPIView, UpdateAPIView, DestroyAPIView, ListAPIView):
                 'message' : 'Please Pass Valid Data'
             }, status=status.HTTP_400_BAD_REQUEST)
         try:
-            if rating.customer is not customer:
+            if rating.customer != customer:
+                print(rating.customer, customer)
                 raise PermissionDenied
             rating.rating_content=rating_content
             rating.rating_value=rating_value
@@ -137,7 +139,7 @@ class RatingView(CreateAPIView, UpdateAPIView, DestroyAPIView, ListAPIView):
                 'message' : 'Please Pass Valid Id'
             }, status=status.HTTP_404_NOT_FOUND)
         try:
-            if rating.customer is not customer:
+            if rating.customer != customer:
                 raise PermissionDenied
             rating.delete()
             ratings = Rating.objects.filter(meal_rated=meal_rated)
@@ -287,7 +289,7 @@ class ManagePayment(ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView):
             raise PermissionDenied
         try:
             data = json.loads(request.body)
-            payment = PaymentType.objects.create(payment_provider = data['payment_provider'],
+            payment = PaymentType.objects.create(payment_provider = data['payment_provider'], first_name = data[''],
                                         customer=customer, card_number=data['card_number'],
                                         card_expire_date=data['card_expire_date'], card_cvc=data['card_cvc']
                                                  )

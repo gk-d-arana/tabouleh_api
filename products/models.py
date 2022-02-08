@@ -24,6 +24,7 @@ class Meal(models.Model):
     meal_ingredients = models.ManyToManyField('Ingredient', related_name="meal_ingredients", blank=True)
     meal_order_times = models.PositiveIntegerField(default=0)
     meal_main_image = models.FileField(null=True, upload_to="static/images", blank=True)
+    meal_delivery_time = models.CharField(blank=True, null=True, default="", max_length=1000)
     created_at = models.DateField(auto_now_add=True, blank=True, null=True)
     
     def __str__(self):

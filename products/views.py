@@ -291,6 +291,7 @@ class OfferMangmentView(CreateAPIView, UpdateAPIView, DestroyAPIView, ListAPIVie
 
 class MealDetailsView(RetrieveAPIView):
     def get(self, request, meal_id, *args, **kwargs):
+        in_wishlist = False
         try: 
             meal = Meal.objects.get(meal_id=meal_id)
         except Exception as e:
@@ -298,13 +299,21 @@ class MealDetailsView(RetrieveAPIView):
                 'message' : 'Please Pass Valid Meal Id'
             }, status=status.HTTP_400_BAD_REQUEST)
         try:
+            try:
+                customer = Customer.objects.get(user=Token.objects.get(key=request.headers['Authorization']).key)
+                wishlist, created =  WishList.objects.get_or_create(customer=customer)
+                if meal in wishlist.meals.all():
+                    in_wishlist = True
+            except Exception as e:
+                pass
             serializer = MealSerializer(meal).data
             ratings = SimpleRatingSerializer(Rating.objects.filter(meal_rated=meal), many=True).data
             meal_images = MealImageSerializer(MealImage.objects.filter(meal=meal), many=True).data
             return JsonResponse({
                 'meal' : serializer,
                 'ratings' : ratings,
-                'meal_images' : meal_images
+                'meal_images' : meal_images, 
+                'in_wishlist' : in_wishlist
             })
         except Exception as e:
             return Response({
@@ -348,7 +357,7 @@ class MealManagmentView(CreateAPIView, UpdateAPIView, DestroyAPIView):
             print(meal_images)
             meal_category = Category.objects.get(category_id=category_id)
             ingredients = request.POST.getlist('ingredients')
-            
+            meal_delivery_time = request.POST['meal_delivery_time']
             #offers_ids  = request.POST.getlist('offers')
             #except Exception as e:
             #    return Response({
@@ -359,7 +368,7 @@ class MealManagmentView(CreateAPIView, UpdateAPIView, DestroyAPIView):
             customer_meal_price=customer_meal_price, supermarket_meal_price = supermarket_meal_price,
             agent_meal_price = agent_meal_price ,restaurant_meal_price = restaurant_meal_price,
             company_meal_price =company_meal_price, meal_category=meal_category, meal_points=meal_points,meal_name_ar = meal_name_ar,
-            meal_description_ar = meal_description_ar
+            meal_description_ar = meal_description_ar, meal_delivery_time=meal_delivery_time
             )
             meal.save()
             meal_category.meals_count += 1
@@ -416,6 +425,7 @@ class MealManagmentView(CreateAPIView, UpdateAPIView, DestroyAPIView):
             agent_meal_price = int(data['agent_meal_price'])
             restaurant_meal_price = int(data['restaurant_meal_price'])
             company_meal_price = int(data['company_meal_price'])
+            meal_delivery_time = data['meal_delivery_time']
             meal_category = Category.objects.get(category_id=category_id)
             meal.meal_name=meal_name
             meal.meal_name_ar=meal_name_ar
@@ -428,6 +438,7 @@ class MealManagmentView(CreateAPIView, UpdateAPIView, DestroyAPIView):
             meal.restaurant_meal_price = restaurant_meal_price
             meal.company_meal_price = company_meal_price 
             meal.meal_category=meal_category
+            meal.meal_delivery_time=meal_delivery_time
             meal.save()
         except Exception as e:
             """ return Response({

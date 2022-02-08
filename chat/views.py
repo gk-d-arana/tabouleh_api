@@ -14,12 +14,13 @@ def admin_chat_rooms(request):
     try:
         admin = Admin.objects.get(user=Token.objects.get(key=request.headers['Authorization']).user)
         chat_rooms_with_customers = CustomerChatroom.objects.filter(admin=admin)
-        chat_rooms_with_delivery_operators = DeliveryOperatorChatroom.objects.filter(admin=admin)
+        chat_rooms_with_delivery_operators = DeliveryOperatorChatroom.objects.filter(admin_user=admin)
         return Response({
             "customers": CustomerChatroomSerializer(chat_rooms_with_customers, many=True).data,
             "delivery_operators": DeliveryOperatorChatroomSerializer(chat_rooms_with_delivery_operators, many=True).data,
             })
     except Exception as e:
+        print(e)
         raise PermissionDenied
 
 

@@ -26,7 +26,9 @@ def login_view(request):
         user = authenticate(request, username=data['username'], password=data['password'])
         if user is not None:
             login(request, user)
-            return JsonResponse({'token' : "{}".format(Token.objects.get(user=User.objects.get(username=data['username'])).key)})
+            token = Token.objects.get(user=User.objects.get(username=data['username'])).key
+            print(token)
+            return JsonResponse({'token' : "{}".format(token)})
         else:
             raise PermissionDenied
     return render(request, 'login.html', {})

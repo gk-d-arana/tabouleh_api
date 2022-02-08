@@ -92,6 +92,9 @@ class PaymentType(models.Model):
     card_number = models.CharField(max_length=16)
     card_cvc = models.PositiveIntegerField(default=123)
     card_expire_date = models.DateField(default="1999-01-01")
+    first_name = models.CharField(default="", max_length=255, null=True, blank=True)
+    last_name = models.CharField(default="", max_length=255 , null=True, blank=True)
+    
 
     def __str__(self):
         return "Payment Type {} For Customer {}".format(self.payment_provider, self.customer.user.username)

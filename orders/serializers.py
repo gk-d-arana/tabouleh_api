@@ -18,11 +18,13 @@ class OrderSerializer(serializers.ModelSerializer):
     payment_type = PaymentTypeSerializer(PaymentType)
     cart_items = SimpleCartItemSerializer(CartItem, many=True)
     #delivery = DeliverySerializer(Delivery)
+    order_address = AddressSerializer(Address)
+    ordered_by = CustomersListSerializer(Customer)
     class Meta:
         model = Order
         fields = [
-            'ordered_at', 'pay_home','cart_items',
-            'payment_type', 'lang', 'lat', 'bill'
+            'id', 'ordered_at', 'pay_home','cart_items','order_note',
+            'payment_type', 'lang', 'lat', 'bill', 'order_address', 'ordered_by'
         ]
 
 
